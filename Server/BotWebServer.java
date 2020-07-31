@@ -90,6 +90,11 @@ public class BotWebServer{
     private void runSubmission(String dir){
         RunPython rp = new RunPython(scriptName,dir);
         Thread thread = new Thread(rp);
+        for(Thread t: threads){
+            if(t.getName().equals(scriptName)){
+                t.interrupt();
+            }
+        }
         thread.setName(scriptName);
         thread.setDaemon(true);
         thread.run();
@@ -101,6 +106,6 @@ public class BotWebServer{
     }
 
     public static void main(String[] args) throws IOException {
-        BotWebServer server = new BotWebServer();
+        new BotWebServer();
     }
 }
