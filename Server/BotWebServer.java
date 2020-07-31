@@ -72,13 +72,14 @@ public class BotWebServer{
         DataOutputStream submissionWriter = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File(dir+'/'+name+ext))));
         try{
             int size = dis.readInt();
-            System.out.println("File Size Read");
+            int tSize;
+            System.out.println("File Size Read: "+size);
             byte[] file = new byte[size];
-            if (dis.read(file) == size) { //reads file sent from client into byte array
+            if (( tSize = dis.read(file) )== size) { //reads file sent from client into byte array
                 System.out.println("file read");
                 submissionWriter.write(file, 0, size);  //saves file received from client on this machine
             }else{
-                System.err.println("FILE READ ERROR");
+                System.err.println("FILE READ ERROR " + tSize + " bytes red instead of "+size);
             }
         }catch(EOFException e){
             System.err.println("EOF was reached");
