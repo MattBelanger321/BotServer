@@ -4,6 +4,7 @@ import java.util.*;
 public class RunPython implements Runnable{
     private String fileName;
     private String dir;
+    public Process p = null;
     
     public RunPython(String fileName,String dir){
         this.fileName = fileName;
@@ -17,7 +18,7 @@ public class RunPython implements Runnable{
         commands.add(fileName);
         String arg[] = new String[1];
         try{
-            Process p = Runtime.getRuntime().exec(commands.toArray(arg),null,new File("./"+dir)); //runs python script
+            p = Runtime.getRuntime().exec(commands.toArray(arg),null,new File("./"+dir)); //runs python script
         }catch(IOException e){
             e.printStackTrace();
         }

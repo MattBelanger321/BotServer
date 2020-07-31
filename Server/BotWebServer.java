@@ -1,6 +1,6 @@
 import java.io.*;
 import java.net.*;
-import java.util.LinkedList;
+import java.util.*;
 
 //Linux based Server application
 public class BotWebServer{
@@ -10,13 +10,13 @@ public class BotWebServer{
     public File mainScript;
     public File config;
     private String scriptName;
-    private final LinkedList<Thread> threads;
+    private final Hashtable<Thread,RunPython> threads;
     public DataOutputStream dos = null;
     public DataInputStream dis;
 
     public BotWebServer() throws IOException {
         
-        threads = new LinkedList<>();
+        threads = new Hashtable<>();
         while(true){
             String dir = ".";
             try {
@@ -79,7 +79,7 @@ public class BotWebServer{
                 System.out.println("file read");
                 submissionWriter.write(file, 0, size);  //saves file received from client on this machine
             }else{
-                System.err.println("FILE READ ERROR " + tSize + " bytes red instead of "+size);
+                System.err.println("FILE READ ERROR " + tSize + " bytes read instead of "+size);
             }
         }catch(EOFException e){
             System.err.println("EOF was reached");
@@ -94,15 +94,19 @@ public class BotWebServer{
     private void runSubmission(String dir){
         RunPython rp = new RunPython(scriptName,dir);
         Thread thread = new Thread(rp);
-        for(Thread t: threads){
+        Set<Thread> s = threads.keySet();
+        for(Thread t: s){
+            System.out.println(t.getName());
             if(t.getName().equals(scriptName)){
-                t.interrupt();
+                threads.get(t).p.destroy();
+                System.out.println("Thread Destroyed");
             }
         }
         thread.setName(scriptName);
         thread.setDaemon(true);
         thread.start();
-        threads.add(thread);
+        System.out.println("Bot running");
+        threads.put(thread,rp);
     }
 
     private String generateFileName(String nameCpy) {
