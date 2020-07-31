@@ -10,8 +10,7 @@ public class BotWebServer{
     public File mainScript;
     public File config;
     private String scriptName;
-    private String configName;
-    private LinkedList<Thread> threads;
+    private final LinkedList<Thread> threads;
     public DataOutputStream dos = null;
     public DataInputStream dis;
 
@@ -74,9 +73,12 @@ public class BotWebServer{
             int size = dis.readInt();
             System.out.println("File Size Read");
             byte[] file = new byte[size];
-            dis.read(file); //reads file sent from client into byte array
-            System.out.println("file read");
-            submissionWriter.write(file,0,size);  //saves file received from client on this machine
+            if (dis.read(file) == size) { //reads file sent from client into byte array
+                System.out.println("file read");
+                submissionWriter.write(file, 0, size);  //saves file received from client on this machine
+            }else{
+                System.err.println("FILE READ ERROR");
+            }
         }catch(EOFException e){
             System.err.println("EOF was reached");
         }
@@ -97,7 +99,7 @@ public class BotWebServer{
         }
         thread.setName(scriptName);
         thread.setDaemon(true);
-        thread.run();
+        thread.start();
         threads.add(thread);
     }
 
@@ -108,4 +110,5 @@ public class BotWebServer{
     public static void main(String[] args) throws IOException {
         new BotWebServer();
     }
+
 }
